@@ -247,11 +247,7 @@ db.getCollection('opportunities').aggregate([
    },
                  { $match:
                     { $expr:
-                       { $and:
-                          [
                             { $eq: [ "$value",  "$$cv" ] }
-                          ]
-                       }
                     },
 
                  }
