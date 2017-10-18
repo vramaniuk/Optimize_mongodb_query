@@ -2,6 +2,14 @@ db.opportunities.createIndex({
     "initiativeId" : 1,
     "contacts.questions.category_id" : 1,
     "contacts.datePublished" : 1
+});
+
+db.clientCriteria.createIndex({
+    "value":1
+})
+
+db.clientCriteria.createIndex({
+    "criteria.versions.initiativeId":1
 })
 
 db.getCollection('opportunities').aggregate([
@@ -228,13 +236,35 @@ db.getCollection('opportunities').aggregate([
         }
     },
     {
-        "$lookup" : {
-            "from" : "clientCriteria",
-            "localField" : "criteria_value",
-            "foreignField" : "value",
-            "as" : "criteria"
-        }
-    },
+       "$lookup" : {
+           "from" : "clientCriteria",
+               let: { "cv": "$criteria_value"},
+                pipeline: [
+                   {
+       "$match" : {
+           "versions.initiativeId" : ObjectId("58af4da0b310d92314627290")
+       }
+   },
+                 { $match:
+                    { $expr:
+                       { $and:
+                          [
+                            { $eq: [ "$value",  "$$cv" ] }
+                          ]
+                       }
+                    },
+
+                 },
+                 { $project: { 'versions.initiativeId': 1,
+                               'definition': 1,
+                               'versions.definition': 1,
+                               'criteria_value': 1,
+                               'label': 1
+                     } }
+              ],
+           "as" : "criteria"
+       }
+   },
     {
         "$unwind" : "$criteria"
     },
