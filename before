@@ -254,13 +254,7 @@ db.getCollection('opportunities').aggregate([
                        }
                     },
 
-                 },
-                 { $project: { 'versions.initiativeId': 1,
-                               'definition': 1,
-                               'versions.definition': 1,
-                               'criteria_value': 1,
-                               'label': 1
-                     } }
+                 }
               ],
            "as" : "criteria"
        }
