@@ -238,7 +238,7 @@ db.getCollection('opportunities').aggregate([
     {
        "$lookup" : {
            "from" : "clientCriteria",
-               let: { "cv": "$criteria_value"},
+                let: { "cv": "$criteria_value"},
                 pipeline: [
                    {
        "$match" : {
@@ -255,17 +255,6 @@ db.getCollection('opportunities').aggregate([
            "as" : "criteria"
        }
    },
-    {
-        "$unwind" : "$criteria"
-    },
-    {
-        "$unwind" : "$criteria.versions"
-    },
-    {
-        "$match" : {
-            "criteria.versions.initiativeId" : ObjectId("58af4da0b310d92314627290")
-        }
-    },
     {
         "$group" : {
             "_id" : "$contacts.questions.answers.primary_answer_value",
@@ -284,11 +273,11 @@ db.getCollection('opportunities').aggregate([
                     "answer_value" : "$contacts.questions.answers.primary_answer_value",
                     "selected" : "$contacts.questions.answers.loopInstances.is_selected",
                     "value" : "$criteria_value",
-                    "text" : "$criteria.label",
+                    "text" : {$arrayElemAt:["$criteria.label",0]},
                     "definition" : {
                         "$ifNull" : [
-                            "$criteria.versions.definition",
-                            "$criteria.definition"
+                            {$arrayElemAt:[{$arrayElemAt:["$criteria.versions.definition",0]},0]},
+                            {$arrayElemAt:["$criteria.definition",0]}
                         ]
                     }
                 }
